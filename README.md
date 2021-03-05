@@ -17,7 +17,6 @@ Most of you should have been faced with these kind of questions:
 - A goroutine once started, it's hardly being monitored. [There're too many goroutines in pprof/goroutine, hardly locate what you want!]
 - Most memory leak (by goroutine bursting) is caused by mis-understanding lifetime of a goroutine, this package force user to estimate how long your goroutine should have. Err will be reported if unexpected alive goroutine occurs.
 
-
 And thus, using [goroutine] will improve all advantages below:
 
 - Auto recovers if goroutine meets an inner panic.Besides, how to handle a panic can be set by `goroutine.HandlePanic = func(e interface{}) {}`.
@@ -29,6 +28,7 @@ Know that using [goroutine] will have some extra cost for monitoring a goroutine
 - An extra goroutine to wait core goroutine to finish or timeout warning.
 - Each goroutine will be managed through a gss center, it's a concurrent map (It means two irrelevant goroutines are put into a race container, there should be lock cost too).
 
+But compare with your service logic, these cost is few.
 
 In which case you should use [goroutine]:
 - Most of your teammates are new. They're ones easier to produce panic.
