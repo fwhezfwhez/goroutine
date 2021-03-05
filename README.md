@@ -41,6 +41,19 @@ In which case you should use official goroutine:
 - You've owned well-performed toolkit to detect goroutine leak and panic.
 - You just want to use goroutine as fast,clean as it can.
 
+To well divide which case to use and which not, here is some list:
+
+✔ means should use [goroutine]
+✖ means should use golang official goroutine
+
+| scene | should use | reason |
+|---|---|----|
+| start a cron job | ✔ | each job should have expected deadline, if hard to decide, set it bigger |
+| write a log asynchronously | ✔ | the same reason ↑ |
+| heartbeat routine on user connects | ✖ | this should well handled in framework, normally untouchable by teammate |
+| jobs with `sync.waitGroup` | ✔✖ | If job not done or expire, waitGroup will block which break your request, this is easy detect thus use [goroutine] or not both ok |
+| present extra props in shop exchange | ✔ | goroutine for service logic should always be well protected. These codes are often touched by teammates |
+
 ## Start
 `go get github.com/fwhezfwhez/goroutine`
 
