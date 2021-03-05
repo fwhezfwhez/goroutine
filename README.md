@@ -4,7 +4,7 @@
 To get well divided, `goroutine` is described  as golang official object, and `[goroutine]` is described for this repo.
 
 ## Declaration
-[goroutine] is not redesign another goroutine. It's just a wrap to make goroutine perform better in group team.
+[goroutine] is not redesigning another goroutine. It's just a wrap to make goroutine perform better in group team.
 
 ## Why do I design goroutine, rather than using `go func(){}()`?
 Golang basically supports goroutine and it's easy to use , like `go handler()`.
@@ -89,7 +89,7 @@ func main() {
 		})
 	}
 
-	// An eternal goroutine with short deadline
+	// An eternal goroutine without deadline
 	goroutine.ProtectedGo(func() {
 		fmt.Println("an eternal goroutine")
 	}, goroutine.GoParam{
