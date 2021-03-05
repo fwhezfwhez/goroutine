@@ -33,7 +33,13 @@ Know that using [goroutine] will have some extra cost for monitoring a goroutine
 In which case you should use [goroutine]:
 - Most of your teammates are new. They're ones easier to produce panic.
 - Some of your jobs are important and just put into product use (it might cause unexpected leak or panic and thus should be monitored for some time).
+- Most of your service project creating goroutine.
 
+In which case you should use official goroutine:
+- You're designing a framework which has nothing to do with business.
+- You're excellent with goroutine and hardly produce  unexpected zombie goroutines.
+- You've owned well-performed toolkit to detect goroutine leak and panic.
+- You just want to use goroutine as fast,clean as it can.
 
 ## Start
 `go get github.com/fwhezfwhez/goroutine`
