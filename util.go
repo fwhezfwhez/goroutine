@@ -11,6 +11,12 @@ func SpotHere() string {
 	return fmt.Sprintf("%s:%d", f, l)
 }
 
+func SpotHereV2(depth int) string {
+	_, f, l, _ := runtime.Caller(depth)
+	return fmt.Sprintf("%s:%d", f, l)
+}
+
+
 func JSON(src interface{}) string {
 	b, _ := json.MarshalIndent(src, "", "  ")
 	return string(b)

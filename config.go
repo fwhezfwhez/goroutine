@@ -1,5 +1,7 @@
 package goroutine
 
+import "time"
+
 // Event callback
 // All callbacks below can be well set by users
 var (
@@ -13,6 +15,8 @@ var (
 // Profile arguments
 var (
 	// How long a zombie info will be storaged in gss.zombies
-	// by default 3days
 	ZombieStorageSeconds int
+
+	// In which interval to clear expired zombies
+	ZombieClearInterval time.Duration
 )

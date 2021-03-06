@@ -49,6 +49,10 @@ func (gss *GsSchedule) addGs(gs *Gs) {
 
 	if willExipire {
 		go func() {
+
+			var isTimeout bool
+
+		L:
 			for {
 				select {
 				case <-time.After(expireAt.Sub(time.Now())):
@@ -60,15 +64,18 @@ func (gss *GsSchedule) addGs(gs *Gs) {
 
 					// remove it from gss.gsm to gss.zombie
 					gss.gsm.Delete(gs.unqKey)
-					gss.zombies.SetEx(gs.unqKey, gs, DefaultInt(ZombieStorageSeconds, 60*60*24*3))
+					gss.zombies.SetEx(gs.unqKey, gs, DefaultInt(ZombieStorageSeconds, 5*60))
 					atomic.AddInt64(&gss.zombieIndex, 1)
-					return
+
+					isTimeout = true
+					break L
 				case <-gs.recvFinish:
 					// gs recv finish signal
 					gss.finishGs(gs)
 					return
 				}
 			}
+			_ = isTimeout
 		}()
 		return
 	}
@@ -88,11 +95,16 @@ func (gss *GsSchedule) zombieD() {
 
 			for {
 				n := gss.zombies.ClearExpireKeys()
-				if n >0 {
+				if n > 0 {
 					atomic.AddInt64(&gss.zombieIndex, -int64(n))
 				}
 				fmt.Printf("clear %d expired zombie keys \n", n)
-				time.Sleep(time.Duration(DefaultInt(ZombieStorageSeconds, 3*24*60*60)) * time.Second)
+				if ZombieClearInterval == 0 {
+					time.Sleep(30 * time.Minute)
+				} else {
+					time.Sleep(ZombieClearInterval)
+				}
+
 			}
 		}()
 	}
