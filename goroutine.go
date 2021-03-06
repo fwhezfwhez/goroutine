@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-
-
 // ProtectedGo param
 type GoParam struct {
 	// A goroutine will mark this unique key and saved.
@@ -54,8 +52,30 @@ func (gp GoParam) begin(start string) GoParam {
 var offset int32
 
 // Start a goroutine in protected mod
+// This function should be straightly called  where you put `go` and should not be wrap by functions again,because if wrapped, caller stack might wrong depth.
+// If consider wrapped, call Go(f ,param...) instead.
+// If consider wrapped in many layer , call GoDepth(depth, f, param...)
 func ProtectedGo(f func(), params ... GoParam) {
 	here := SpotHere()
+	if len(params) >= 1 {
+		go protectedGo(f, params[0].begin(here))
+	} else {
+		go protectedGo(f, GoParam{}.begin(here))
+	}
+}
+
+// If want to use ProtectedGo wrapped in your pkg, you should call Go or Godepth to help locate call stack correctly.
+func Go(f func(), params ... GoParam) {
+	here := SpotHereV2(3)
+	if len(params) >= 1 {
+		go protectedGo(f, params[0].begin(here))
+	} else {
+		go protectedGo(f, GoParam{}.begin(here))
+	}
+}
+
+func GoDepth(depth int, f func(), params ... GoParam) {
+	here := SpotHereV2(depth)
 	if len(params) >= 1 {
 		go protectedGo(f, params[0].begin(here))
 	} else {
