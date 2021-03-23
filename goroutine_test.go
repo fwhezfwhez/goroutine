@@ -13,13 +13,18 @@ func TestGoRoutine(t *testing.T) {
 		fmt.Printf("routine:%s bad lifetime:\n %s \n", gs.UniqKey(), gs.Info())
 	}
 
-	ProtectedGo(func() {
-		time.Sleep(6 * time.Second)
-	}, GoParam{
-		ExpectedExpireSecond: -1,
-	})
+	for {
+		//go func(){
+		//	var a = 5
+		//	_=a
+		//}()
+		ProtectedGo(func() {
 
-	time.Sleep(15 * time.Second)
+		}, GoParam{
+			ExpectedExpireSecond: 10,
+			ShouldProtected:      true,
+		})
+	}
 }
 
 func TestMonitor(t *testing.T) {
@@ -46,7 +51,6 @@ func TestMonitor(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 	time.Sleep(29 * time.Second)
-
 
 	rs := gsSchedules.Monitoring(4)
 
