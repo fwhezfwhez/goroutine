@@ -26,23 +26,26 @@ type GsSchedule struct {
 	// each time meets a zombie will incr one times
 	zombieIndex    int64
 	startedZombied bool
+
+	hitMaxZombieIndex chan struct{}
 }
 
 // new a gs routine manager
 func NewGsSchedule() *GsSchedule {
-	return &GsSchedule{
+	gss := &GsSchedule{
 		gsm:      cmap.NewMap(),
 		zombies:  cmap.NewMap(),
 		eternals: cmap.NewMap(),
+
+		hitMaxZombieIndex: make(chan struct{}, 10),
 	}
+
+	gss.zombieD()
+	return gss
 }
 
 // add a gs routine into gss manager
 func (gss *GsSchedule) addGs(gs *Gs) {
-	if gss.startedZombied == false {
-		gss.zombieD()
-	}
-
 	expireAt, willExipire := gs.ExpireAt()
 
 	gss.gsm.Set(gs.unqKey, gs)
@@ -65,7 +68,11 @@ func (gss *GsSchedule) addGs(gs *Gs) {
 					// remove it from gss.gsm to gss.zombie
 					gss.gsm.Delete(gs.unqKey)
 					gss.zombies.SetEx(gs.unqKey, gs, DefaultInt(ZombieStorageSeconds, 5*60))
-					atomic.AddInt64(&gss.zombieIndex, 1)
+
+					idx := atomic.AddInt64(&gss.zombieIndex, 1)
+					if int(idx) > DefaultInt(ZombieMaxBustNum, 5000000) {
+						gss.hitMaxZombieIndex <- struct{}{}
+					}
 
 					isTimeout = true
 					break L
@@ -94,17 +101,17 @@ func (gss *GsSchedule) zombieD() {
 			}
 
 			for {
-				n := gss.zombies.ClearExpireKeys()
-				if n > 0 {
-					atomic.AddInt64(&gss.zombieIndex, -int64(n))
-				}
-				fmt.Printf("clear %d expired zombie keys \n", n)
-				if ZombieClearInterval == 0 {
-					time.Sleep(30 * time.Minute)
-				} else {
-					time.Sleep(ZombieClearInterval)
-				}
 
+				select {
+				case <-time.After(ZombieClearInterval):
+					n := gss.zombies.ClearExpireKeys()
+					if n > 0 {
+						atomic.AddInt64(&gss.zombieIndex, -int64(n))
+					}
+				case <-gss.hitMaxZombieIndex:
+					gss.zombies.ClearExpireKeys()
+					gss.zombieIndex = 0
+				}
 			}
 		}()
 	}

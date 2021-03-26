@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"runtime"
-	"runtime/debug"
 	"sync/atomic"
 	"time"
 )
@@ -94,7 +93,7 @@ func protectedGo(f func(), param GoParam) {
 			if HandlePanic != nil {
 				HandlePanic(e)
 			}
-			fmt.Printf("panic recover from %v \n %s", e, debug.Stack())
+			// fmt.Printf("panic recover from %v \n %s", e, debug.Stack())
 		}
 	}()
 
@@ -131,6 +130,7 @@ func protectedGo(f func(), param GoParam) {
 		startAt:              time.Now(),
 		recvFinish:           make(chan struct{}, 1),
 	}
+	_=gs
 
 	func(gs *Gs) {
 		gsSchedules.addGs(gs)
