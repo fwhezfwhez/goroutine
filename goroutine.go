@@ -99,7 +99,7 @@ func protectedGo(f func(), param GoParam) {
 			if HandlePanic != nil {
 				HandlePanic(fmt.Errorf("panic from %v loc=%s", e, param.firstCaller))
 			}
-			// fmt.Printf("panic recover from %v \n %s", e, debug.Stack())
+			// fmt.Pprintf("panic recover from %v \n %s", e, debug.Stack())
 		}
 	}()
 

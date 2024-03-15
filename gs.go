@@ -65,3 +65,8 @@ func (gs Gs) GetView() GsView {
 		StartAt:     gs.startAt,
 	}
 }
+
+// 返回协程的初始发起位置
+func (gs Gs) GetLoc() string {
+	return gs.firstCaller
+}
