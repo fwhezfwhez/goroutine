@@ -8,6 +8,7 @@ import (
 )
 
 func TestGoRoutine(t *testing.T) {
+	fmt.Printf("%v", fmt.Errorf("heehehhe"))
 
 	ProtectedGo(func() {
 		time.Sleep(3 * time.Second)
