@@ -2,7 +2,6 @@ package goroutine
 
 import (
 	"fmt"
-	"github.com/fwhezfwhez/errorx"
 	"math"
 	"runtime"
 	"sync/atomic"
@@ -98,9 +97,7 @@ func protectedGo(f func(), param GoParam) {
 	defer func() {
 		if e := recover(); e != nil {
 			if HandlePanic != nil {
-				HandlePanic(errorx.WrapContext(fmt.Errorf("panic from %v", e), map[string]interface{}{
-					"loc": param.firstCaller,
-				}))
+				HandlePanic(fmt.Errorf("panic from %v loc=%s", e, param.firstCaller))
 			}
 			// fmt.Printf("panic recover from %v \n %s", e, debug.Stack())
 		}
