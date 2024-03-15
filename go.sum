@@ -1,0 +1,6 @@
+github.com/fwhezfwhez/cmap v1.4.4 h1:w48l7gQzxE/mdlH+LPANL3gH2zTtFRDaIbPeh/D1Jeo=
+github.com/fwhezfwhez/cmap v1.4.4/go.mod h1:KRWu6nc08nG0b559+UXBIoNx6IvsFq/uPdnIjecEKxw=
+github.com/fwhezfwhez/errorx v1.4.0 h1:8d02jt9focTILS1aBqnZaBkxIygGSSE+Deq+lq5kKNE=
+github.com/fwhezfwhez/errorx v1.4.0/go.mod h1:epOraH2nrfmf4JUao5290NFuXw9t6MZnzgwoW5guABE=
+github.com/gofrs/uuid v4.0.0+incompatible h1:1SD/1F5pU8p29ybwgQSwpQk+mwdRrXCYuPhW6m+TnJw=
+github.com/gofrs/uuid v4.0.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=

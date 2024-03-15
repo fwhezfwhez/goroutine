@@ -2,6 +2,7 @@ package goroutine
 
 import (
 	"fmt"
+	"github.com/fwhezfwhez/errorx"
 	"math"
 	"runtime"
 	"sync/atomic"
@@ -24,6 +25,8 @@ type GoParam struct {
 	// where caller is
 	callerStack []string
 
+	firstCaller string
+
 	// If shouldProtected is false, then it's just a simply goroutine
 	// If true, gss will be add to gss-management, time-out err and zombie monitor
 	ShouldProtected bool
@@ -31,6 +34,10 @@ type GoParam struct {
 
 // Go with exist goroutine
 func (gp GoParam) begin(start string) GoParam {
+
+	if gp.firstCaller == "" {
+		gp.firstCaller = start
+	}
 
 	if gp.ShouldProtected == false {
 		return gp
@@ -54,7 +61,7 @@ var offset int32
 // This function should be straightly called  where you put `go` and should not be wrap by functions again,because if wrapped, caller stack might wrong depth.
 // If consider wrapped, call Go(f ,param...) instead.
 // If consider wrapped in many layer , call GoDepth(depth, f, param...)
-func ProtectedGo(f func(), params ... GoParam) {
+func ProtectedGo(f func(), params ...GoParam) {
 	here := SpotHere()
 	if len(params) >= 1 {
 		go protectedGo(f, params[0].begin(here))
@@ -64,7 +71,7 @@ func ProtectedGo(f func(), params ... GoParam) {
 }
 
 // If want to use ProtectedGo wrapped in your pkg, you should call Go or Godepth to help locate call stack correctly.
-func Go(f func(), params ... GoParam) {
+func Go(f func(), params ...GoParam) {
 	here := SpotHereV2(3)
 	if len(params) >= 1 {
 		go protectedGo(f, params[0].begin(here))
@@ -73,7 +80,7 @@ func Go(f func(), params ... GoParam) {
 	}
 }
 
-func GoDepth(depth int, f func(), params ... GoParam) {
+func GoDepth(depth int, f func(), params ...GoParam) {
 	here := SpotHereV2(depth)
 	if len(params) >= 1 {
 		go protectedGo(f, params[0].begin(here))
@@ -91,7 +98,9 @@ func protectedGo(f func(), param GoParam) {
 	defer func() {
 		if e := recover(); e != nil {
 			if HandlePanic != nil {
-				HandlePanic(e)
+				HandlePanic(errorx.WrapContext(fmt.Errorf("panic from %v", e), map[string]interface{}{
+					"loc": param.firstCaller,
+				}))
 			}
 			// fmt.Printf("panic recover from %v \n %s", e, debug.Stack())
 		}
@@ -129,8 +138,9 @@ func protectedGo(f func(), param GoParam) {
 		callerStack:          param.callerStack,
 		startAt:              time.Now(),
 		recvFinish:           make(chan struct{}, 1),
+		firstCaller:          param.firstCaller,
 	}
-	_=gs
+	_ = gs
 
 	func(gs *Gs) {
 		gsSchedules.addGs(gs)

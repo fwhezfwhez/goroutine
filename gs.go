@@ -16,6 +16,8 @@ type Gs struct {
 	startAt time.Time // start_at
 
 	recvFinish chan struct{}
+
+	firstCaller string
 }
 
 // function f in gs has done

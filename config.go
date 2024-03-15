@@ -10,12 +10,12 @@ import (
 var (
 	// handle panic event
 	HandlePanic func(e interface{}) = func(e interface{}) {
-		fmt.Printf("recv panic %v", e)
+		fmt.Printf("recv panic %v \n", e)
 	}
 
 	// handle a bad goroutine
 	HandleBadGs func(gs *Gs) = func(gs *Gs) {
-		fmt.Printf("goroutine timeout %v", gs.callerStack)
+		fmt.Printf("goroutine timeout first_caller=%s \n", gs.firstCaller)
 	}
 )
 

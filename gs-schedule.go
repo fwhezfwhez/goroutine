@@ -63,7 +63,7 @@ func (gss *GsSchedule) addGs(gs *Gs) {
 					if HandleBadGs != nil {
 						HandleBadGs(gs)
 					}
-					fmt.Printf("recv a zombie goroutine: %s\n", gs.callerStack)
+					//fmt.Printf("recv a zombie goroutine: %s\n", gs.callerStack)
 
 					// remove it from gss.gsm to gss.zombie
 					gss.gsm.Delete(gs.unqKey)
@@ -138,7 +138,7 @@ func (gss *GsSchedule) Monitoring(size int) MonitorResult {
 		gs := value.(*Gs)
 		rs.ZombieViews = append(rs.ZombieViews, gs.GetView())
 
-		offset ++
+		offset++
 		if offset >= size {
 			return false
 		}

@@ -9,22 +9,42 @@ import (
 
 func TestGoRoutine(t *testing.T) {
 
-	HandleBadGs = func(gs *Gs) {
-		fmt.Printf("routine:%s bad lifetime:\n %s \n", gs.UniqKey(), gs.Info())
-	}
+	ProtectedGo(func() {
+		time.Sleep(3 * time.Second)
+	}, GoParam{
+		ExpectedExpireSecond: 1,
+		ShouldProtected:      true,
+	})
 
-	for {
-		//go func(){
-		//	var a = 5
-		//	_=a
-		//}()
-		ProtectedGo(func() {
+	ProtectedGo(func() {
+		panic(fmt.Errorf("fake panic"))
+	}, GoParam{
+		ExpectedExpireSecond: 1,
+		ShouldProtected:      true,
+	})
 
-		}, GoParam{
-			ExpectedExpireSecond: 10,
-			ShouldProtected:      true,
-		})
-	}
+	time.Sleep(5 * time.Second)
+}
+
+func TestPkgGo(t *testing.T) {
+	myGo()
+
+	GoDepth(2, func() {
+		time.Sleep(3 * time.Second)
+	}, GoParam{
+		ExpectedExpireSecond: 1,
+		ShouldProtected:      true,
+	})
+	time.Sleep(5 * time.Second)
+}
+
+func myGo() {
+	Go(func() {
+		time.Sleep(3 * time.Second)
+	}, GoParam{
+		ExpectedExpireSecond: 1,
+		ShouldProtected:      true,
+	})
 }
 
 func TestMonitor(t *testing.T) {
